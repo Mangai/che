@@ -17,6 +17,7 @@ import IdeSvc from '../../ide/ide.service';
 import {WorkspacesService} from '../workspaces.service';
 import {ICheEditModeOverlayConfig} from '../../../components/widget/edit-mode-overlay/che-edit-mode-overlay.directive';
 import {IEnvironmentManagerMachine} from '../../../components/api/environment/environment-manager-machine';
+import {CheBranding} from '../../../components/branding/che-branding.factory';
 
 export  interface IInitData {
   namespaceId: string;
@@ -36,7 +37,7 @@ const TAB: Array<string> = ['Overview', 'Projects', 'Containers', 'Servers', 'En
  */
 export class WorkspaceDetailsController {
 
-  static $inject = ['$location', '$log', '$scope', 'lodash', 'cheNotification', 'cheWorkspace', 'ideSvc', 'workspaceDetailsService', 'initData', '$timeout', 'workspacesService'];
+  static $inject = ['$location', '$log', '$scope', 'lodash', 'cheNotification', 'cheWorkspace', 'ideSvc', 'workspaceDetailsService', 'cheBranding', 'initData', '$timeout', 'workspacesService'];
 
   /**
    * Overlay panel configuration.
@@ -66,6 +67,7 @@ export class WorkspaceDetailsController {
   private errorMessage: string = '';
   private tabsValidationTimeout: ng.IPromise<any>;
   private pluginRegistry: string;
+  workspaceDocs: string;
   /**
    * There are unsaved changes to apply (with restart) when is't <code>true</code>.
    */
@@ -82,6 +84,7 @@ export class WorkspaceDetailsController {
               cheWorkspace: CheWorkspace,
               ideSvc: IdeSvc,
               workspaceDetailsService: WorkspaceDetailsService,
+              cheBranding: CheBranding,
               initData: IInitData,
               $timeout: ng.ITimeoutService,
               workspacesService: WorkspacesService) {
@@ -96,6 +99,7 @@ export class WorkspaceDetailsController {
     this.workspaceDetailsService = workspaceDetailsService;
     this.workspacesService = workspacesService;
     this.pluginRegistry = cheWorkspace.getWorkspaceSettings() != null ? cheWorkspace.getWorkspaceSettings().cheWorkspacePluginRegistryUrl : null;
+    this.workspaceDocs = cheBranding.getDocs().general;
 
     if (!initData.workspaceDetails) {
       cheNotification.showError(`There is no workspace with name ${initData.workspaceName}`);
@@ -169,12 +173,20 @@ export class WorkspaceDetailsController {
   }
 
   /**
-   * Returns `true` if the recipe of default environment of the workspace has supported recipe type
+   * Returns `true` if supported.
    *
    * @returns {boolean}
    */
   get isSupported(): boolean {
     return this.workspacesService.isSupported(this.workspaceDetails);
+  }
+
+  isSupportedVersion(): boolean {
+    return this.workspacesService.isSupportedVersion(this.workspaceDetails);
+  }
+
+  isSupportedRecipeType(): boolean {
+    return this.workspacesService.isSupportedRecipeType(this.workspaceDetails);
   }
 
   /**
@@ -327,8 +339,12 @@ export class WorkspaceDetailsController {
    * @returns {string}
    */
   getOverlayMessage(failedTabs?: string[]): string {
-    if (this.isSupported === false) {
+    if (!this.isSupportedRecipeType()) {
       return `Current infrastructure doesn't support this workspace recipe type.`;
+    }
+
+    if (!this.isSupportedVersion()) {
+      return `This workspace is not supported in the current version of the product.`;
     }
 
     if (this.isSwitchToPlugins()) {

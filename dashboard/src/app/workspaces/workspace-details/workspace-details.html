@@ -1,6 +1,9 @@
-<che-row-toolbar
-  che-title="{{workspaceDetailsController.workspaceName}}"
-  link-href="#/workspaces" link-title="Workspaces" class="workspace-details-toolbar">
+<che-description ng-hide="workspaceDetailsController.isSupportedVersion()" class="workspace-details-warning-info"
+                 che-link-title="Learn more." che-link="{{branding.docs.general}}">
+  This workspace is not a compatible workspace and needs to be converted as a Che 7 workspaces.
+</che-description>
+<che-row-toolbar che-title="{{workspaceDetailsController.workspaceName}}" link-href="#/workspaces"
+  link-title="Workspaces" class="workspace-details-toolbar">
   <div layout="row" layout-align="start center" class="toolbar-info">
     <!-- is environment supported -->
     <workspace-status che-status="workspaceDetailsController.getWorkspaceStatus()"

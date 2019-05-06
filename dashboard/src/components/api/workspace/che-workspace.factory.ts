@@ -88,7 +88,7 @@ export class CheWorkspace {
   /**
    * Map with promises.
    */
-  private workspacePromises: Map<string, ng.IHttpPromise<any>> = new Map();
+  private workspacePromises: Map<string, ng.IPromise<any>> = new Map();
 
   /**
    * Default constructor that is using resource
@@ -381,7 +381,7 @@ export class CheWorkspace {
     }
     const defer = this.$q.defer();
     const promise: ng.IHttpPromise<any> = this.$http.get('/api/workspace/' + workspaceKey);
-    this.workspacePromises.set(workspacePromisesKey, promise);
+    this.workspacePromises.set(workspacePromisesKey, defer.promise);
 
     promise.then((response: ng.IHttpPromiseCallbackArg<che.IWorkspace>) => {
       const workspace = response.data;
@@ -450,8 +450,7 @@ export class CheWorkspace {
         'recipe': null,
         'machines': {
           'dev-machine': {
-            'attributes': {'memoryLimitBytes': ram},
-            'installers': ['org.eclipse.che.ws-agent', 'org.eclipse.che.exec', 'org.eclipse.che.terminal', 'org.eclipse.che.ssh']
+            'attributes': {'memoryLimitBytes': ram}
           }
         }
       };
@@ -483,8 +482,7 @@ export class CheWorkspace {
       devMachine = {
         'name': 'ws-machine',
         'attributes': {'memoryLimitBytes': ram},
-        'type': 'docker',
-        'installers': ['org.eclipse.che.ws-agent', 'org.eclipse.che.exec', 'org.eclipse.che.terminal', 'org.eclipse.che.ssh']
+        'type': 'docker'
       };
       defaultEnvironment.machines[devMachine.name] = devMachine;
     } else {

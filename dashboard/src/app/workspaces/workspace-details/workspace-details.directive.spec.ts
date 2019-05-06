@@ -57,7 +57,6 @@ describe(`WorkspaceDetailsController >`, () => {
               'dev-machine': {
                 'env': {},
                 'volumes': {},
-                'installers': ['org.eclipse.che.exec', 'org.eclipse.che.terminal', 'org.eclipse.che.ws-agent'],
                 'servers': {
                   'tomcat8-debug': {'protocol': 'http', 'port': '8000'},
                   'codeserver': {'protocol': 'http', 'port': '9876'},
@@ -75,7 +74,12 @@ describe(`WorkspaceDetailsController >`, () => {
         'ide': 'http://localhost:8080/che/wksp-98cs'
       },
       'id': 'workspacezbkov1e8qcm00dli',
-      'attributes': {'created': 1516282666658, 'stackId': 'blank-default'}
+      'attributes': {
+        'editor': 'eclipse/che-theia/0.0.1',
+        'plugins': 'eclipse/che-machine-exec-plugin/0.0.1',
+        'created': 1516282666658,
+        'stackId': 'blank-default'
+      }
     };
   }
 
@@ -109,6 +113,8 @@ describe(`WorkspaceDetailsController >`, () => {
       })
       .service('workspacesService', function() {
         this.isSupported = () => { return true; };
+        this.isSupportedVersion = () => { return true; };
+        this.isSupportedRecipeType = () => { return true; };
       })
       .service('$route', function() {
         this.current = {
@@ -577,6 +583,16 @@ describe(`WorkspaceDetailsController >`, () => {
           compileDirective();
 
           controller.workspacesService.isSupported = jasmine.createSpy('workspaceDetailsController.isSupported')
+            .and
+            .callFake(() => {
+              return false;
+            });
+          controller.workspacesService.isSupportedVersion = jasmine.createSpy('workspaceDetailsController.isSupportedVersion')
+            .and
+            .callFake(() => {
+              return false;
+            });  
+          controller.workspacesService.isSupportedRecipeType = jasmine.createSpy('workspaceDetailsController.isSupportedRecipeType')
             .and
             .callFake(() => {
               return false;

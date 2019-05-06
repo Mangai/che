@@ -29,6 +29,7 @@ export class WorkspaceItemCtrl {
   workspacesService: WorkspacesService;
 
   workspace: che.IWorkspace;
+  workspaceSupportIssues = '';
 
   /**
    * Default constructor that is using resource
@@ -44,12 +45,24 @@ export class WorkspaceItemCtrl {
   }
 
   /**
-   * Returns `true` if default environment of workspace contains supported recipe type.
+   * Returns `true` if supported.
    *
    * @returns {boolean}
    */
   get isSupported(): boolean {
-    return this.workspacesService.isSupported(this.workspace);
+    if (!this.workspacesService.isSupportedRecipeType(this.workspace)) {
+      this.workspaceSupportIssues = 'Current infrastructure doesn\'t support this workspace recipe type.';
+      return false;
+    }
+    if (!this.workspacesService.isSupportedVersion(this.workspace)) {
+      this.workspaceSupportIssues = 'This workspace is not supported in the current version of the product.';
+      return false;
+    }
+    if (!this.workspaceSupportIssues) {
+      this.workspaceSupportIssues = '';
+    }   
+
+    return true;
   }
 
   /**
