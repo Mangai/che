@@ -275,8 +275,8 @@ parameters:
   value: '1Gi'
 - name: CHE_INFRA_KUBERNETES_PVC_STRATEGY
   displayName: PVC strategy
-  description: PVC strategy. Unique implies creating PVC per workspace. Common uses one PVC with subpaths in PV. Defaults to unique
-  value: 'unique'
+  description: PVC strategy. common implies creating PVC per workspace. Common uses one PVC with subpaths in PV. Defaults to common
+  value: 'common'
 - name: CHE_INFRA_KUBERNETES_SERVICE__ACCOUNT__NAME
   displayName: Workspace service account name
   description: Service accont name that should be specified to be bound to workspaces pods. Defauls to 'NULL' that means that Che Server won't specify any and default one will be bound.
